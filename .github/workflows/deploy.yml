@@ -22,7 +22,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       # Configurar Flutter
       - uses: subosito/flutter-action@v2
@@ -37,13 +37,13 @@ jobs:
       - run: flutter pub get
       - name: Create env file
         run: |
-          echo "SUPABASE_URL=${{ secrets.AUTH_BASE_URL_KEY }}" > .env
+          echo "AUTH_BASE_URL_KEY=${{ secrets.AUTH_BASE_URL_KEY }}" > .env
       
       # Construir para web
       - run: |
           flutter build web \
-            --dart-define=SUPABASE_URL=${{ secrets.AUTH_BASE_URL_KEY }} \
-            --base-href /captadores_app/
+            --dart-define=AUTH_BASE_URL_KEY=${{ secrets.AUTH_BASE_URL_KEY }} \
+            --base-href "/${{ github.event.repository.name }}/"
       
       # Configurar Pages
       - name: Setup Pages

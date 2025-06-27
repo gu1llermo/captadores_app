@@ -1,3 +1,3 @@
 # captadores_app
 
-A new Flutter project.
+App para captadores DLC

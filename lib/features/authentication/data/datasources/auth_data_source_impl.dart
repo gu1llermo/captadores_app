@@ -13,6 +13,10 @@ class AuthDataSourceImpl implements AuthDataSource {
     BaseOptions(
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
       
     ),
   );
@@ -98,9 +102,12 @@ class AuthDataSourceImpl implements AuthDataSource {
     try {
       response = await dio.post(
         baseUrl,
-        options: Options(
-          headers: {HttpHeaders.contentTypeHeader: "application/json"},
-        ),
+        // options: Options(
+        //   headers: {
+        //     HttpHeaders.contentTypeHeader: "application/json",
+        //     HttpHeaders.acceptHeader: "application/json",
+        //     },
+        // ),
         data: bodyJson,
       );
     } on DioException catch (e) {

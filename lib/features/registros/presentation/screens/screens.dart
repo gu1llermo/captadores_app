@@ -1,0 +1,1 @@
+export 'registros_screen.dart';

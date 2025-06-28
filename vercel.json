@@ -1,8 +1,4 @@
 {
-  "buildCommand": "flutter config --enable-web && flutter pub get && flutter build web --dart-define=AUTH_BASE_URL_KEY=$AUTH_BASE_URL_KEY",
-  "outputDirectory": "build/web",
-  "installCommand": "git submodule update --init --recursive && wget -O flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz && tar -xf flutter.tar.xz && export PATH=$PATH:$PWD/flutter/bin && flutter doctor",
-  "functions": {},
   "rewrites": [
     {
       "source": "/(.*)",

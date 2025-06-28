@@ -63,7 +63,10 @@ class LoginNotifier extends _$LoginNotifier with DebounceMixin {
   Future<void> login() async {
     state = state.copyWith(isLoading: true);
     await validateInputs();
-    if (!state.isValidForm) return;
+    if (!state.isValidForm) {
+      state = state.copyWith(isLoading: false);
+      return;
+      }
     try {
       await ref.read(authNotifierProvider.notifier).login(
         email: state.email.value.trim(),

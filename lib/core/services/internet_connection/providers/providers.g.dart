@@ -15,10 +15,9 @@ final internetConnectionServiceProvider =
     Provider<InternetConnectionService>.internal(
       internetConnectionService,
       name: r'internetConnectionServiceProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$internetConnectionServiceHash,
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$internetConnectionServiceHash,
       dependencies: const <ProviderOrFamily>[],
       allTransitiveDependencies: const <ProviderOrFamily>{},
     );
@@ -31,22 +30,22 @@ String _$internetConnectionNotifierHash() =>
 
 /// See also [InternetConnectionNotifier].
 @ProviderFor(InternetConnectionNotifier)
-final internetConnectionNotifierProvider = NotifierProvider<
-  InternetConnectionNotifier,
-  InternetConnectionStatus
->.internal(
-  InternetConnectionNotifier.new,
-  name: r'internetConnectionNotifierProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
+final internetConnectionNotifierProvider =
+    NotifierProvider<
+      InternetConnectionNotifier,
+      InternetConnectionStatus
+    >.internal(
+      InternetConnectionNotifier.new,
+      name: r'internetConnectionNotifierProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
           : _$internetConnectionNotifierHash,
-  dependencies: <ProviderOrFamily>[internetConnectionServiceProvider],
-  allTransitiveDependencies: <ProviderOrFamily>{
-    internetConnectionServiceProvider,
-    ...?internetConnectionServiceProvider.allTransitiveDependencies,
-  },
-);
+      dependencies: <ProviderOrFamily>[internetConnectionServiceProvider],
+      allTransitiveDependencies: <ProviderOrFamily>{
+        internetConnectionServiceProvider,
+        ...?internetConnectionServiceProvider.allTransitiveDependencies,
+      },
+    );
 
 typedef _$InternetConnectionNotifier = Notifier<InternetConnectionStatus>;
 // ignore_for_file: type=lint

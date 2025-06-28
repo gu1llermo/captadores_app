@@ -20,7 +20,7 @@ class ErrorScreen extends StatelessWidget {
             TextButton(
               child: const Text('Volver a home'),
               onPressed: () {
-                context.go(Rutas.home);
+                context.go(Rutas.registros);
               },
             ),
           ],

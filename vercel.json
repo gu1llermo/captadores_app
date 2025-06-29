@@ -6,13 +6,13 @@
   
   "functions": {
     "api/proxy.js": {
-      "runtime": "vercel/node@20.x"
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/api/proxy/(.*)",
+      "destination": "/api/proxy.js"
     }
   ]
   

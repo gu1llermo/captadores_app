@@ -8,7 +8,7 @@ class RegistrosScreen extends StatelessWidget {
     
     return Scaffold(
       appBar: AppBar(),
-      body: const Center(child: Text('Hola mundo')),
+      body: const Center(child: Text('Hola mundo2')),
     );
   }
 }

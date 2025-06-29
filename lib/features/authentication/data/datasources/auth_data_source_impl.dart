@@ -14,10 +14,10 @@ class AuthDataSourceImpl implements AuthDataSource {
       receiveTimeout: const Duration(seconds: 30),
     ),
   );
-  
+
   // URL del proxy en Vercel
   final String proxyUrl = 'https://captadores-dlc.vercel.app/api/proxy';
-  
+
   @override
   Future<UserModel> login({
     required String email,
@@ -27,19 +27,19 @@ class AuthDataSourceImpl implements AuthDataSource {
       "comando": "login",
       "parametros": {"email": email, "password": password},
     });
-    
+
     try {
       if (response?.data == null) {
         throw Exception('No se pudo obtener la respuesta');
       }
-      
+
       final dataResponse = response!.data;
       final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
-      
+
       if (googleSheetResponse.hasError) {
         throw Exception(googleSheetResponse.msg);
       }
-      
+
       return UserModel.fromJson(googleSheetResponse.data!);
     } catch (e) {
       rethrow;
@@ -58,15 +58,15 @@ class AuthDataSourceImpl implements AuthDataSource {
       "comando": "change_password",
       "parametros": {"token": token, "new_password": newPassword},
     });
-    
+
     try {
       if (response?.data == null) {
         throw Exception('No se pudo obtener la respuesta');
       }
-      
+
       final dataResponse = response!.data;
       final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
-      
+
       if (googleSheetResponse.hasError) {
         throw Exception(googleSheetResponse.msg);
       }
@@ -81,15 +81,15 @@ class AuthDataSourceImpl implements AuthDataSource {
       "comando": "recovery_password",
       "parametros": {"email": email},
     });
-    
+
     try {
       if (response?.data == null) {
         throw Exception('No se pudo obtener la respuesta');
       }
-      
+
       final dataResponse = response!.data;
       final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
-      
+
       if (googleSheetResponse.hasError) {
         throw Exception(googleSheetResponse.msg);
       }
@@ -101,14 +101,12 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<Response<dynamic>?> doPost(Map<String, dynamic> body) async {
     final bodyJson = jsonEncode(body);
     Response<dynamic>? response;
-    
+
     try {
       response = await dio.post(
         proxyUrl,
         options: Options(
-          headers: {
-            HttpHeaders.contentTypeHeader: "application/json",
-          },
+          headers: {HttpHeaders.contentTypeHeader: "application/json"},
         ),
         data: bodyJson,
       );
@@ -120,7 +118,7 @@ class AuthDataSourceImpl implements AuthDataSource {
       }
       rethrow;
     }
-    
+
     return response;
   }
 }

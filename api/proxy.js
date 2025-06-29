@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     // URL de tu Google Apps Script
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOEYBmQwees7BsP9lZdW4rAN4EHAmedN1mzYAXEMvrwQ2_lF7NZ7LK0mHzxHyDHkuuFg/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLEC_fzgSAwlfwAjWXVAv8fPm7y8RRdiQAJpASJISgKtDmvTeIKZ9VNnwboiYfkpQ1Ow/exec';
     
     const body = req.body;
     

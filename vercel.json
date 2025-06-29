@@ -2,12 +2,7 @@
   "env": {
     "VERCEL_TOOLBAR": "0"
   },
-  
-  "functions": {
-    "api/proxy.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
+
   "rewrites": [
     {
       "source": "/(.*)",

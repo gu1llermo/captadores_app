@@ -11,6 +11,11 @@ export default async function handler(req, res) {
     return;
   }
 
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
   try {
     // URL de tu Google Apps Script
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOEYBmQwees7BsP9lZdW4rAN4EHAmedN1mzYAXEMvrwQ2_lF7NZ7LK0mHzxHyDHkuuFg/exec';
@@ -28,9 +33,13 @@ export default async function handler(req, res) {
     const response = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (compatible; Proxy/1.0)',
       },
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const data = await response.text();
     
@@ -40,7 +49,7 @@ export default async function handler(req, res) {
       jsonData = JSON.parse(data);
     } catch (e) {
       // Si no es JSON válido, devolver como texto
-      jsonData = { data: data };
+      jsonData = { data: data, raw: true };
     }
 
     res.status(200).json(jsonData);

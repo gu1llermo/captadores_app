@@ -13,7 +13,7 @@ class RegistrosScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Hola mundo4'),
+            const Text('Hola mundo5'),
             TextButton(
               onPressed: () async {
                 ref.read(authNotifierProvider.notifier).logout();

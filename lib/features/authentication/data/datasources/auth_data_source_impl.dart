@@ -1,10 +1,12 @@
 import 'dart:convert';
-// import 'dart:io';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import '../../../../core/config/environment_config.dart';
 import '../../domain/datasources/auth_data_source.dart';
 import '../models/google_sheet_response.dart';
 import '../models/user_model.dart';
+import 'encryption_helper.dart';
+
 
 class AuthDataSourceImpl implements AuthDataSource {
   final dio = Dio(
@@ -15,6 +17,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   );
 
   final baseUrl = EnvironmentConfig().authBaseUrl;
+  final _encryptionHelper = EncryptionHelper();
 
   @override
   Future<UserModel> login({
@@ -96,17 +99,25 @@ class AuthDataSourceImpl implements AuthDataSource {
     }
   }
 
-  // CAMBIAR A GET para evitar CORS completamente
   Future<Response<dynamic>?> doRequest(Map<String, dynamic> body) async {
     Response<dynamic>? response;
 
     try {
+      // *** ENCRIPTAR PARÁMETROS SENSIBLES ANTES DE ENVIAR ***
+      final encryptedBody = _encryptSensitiveData(body);
+      
       // Convertir el body a JSON string y codificarlo para URL
-      final bodyJson = jsonEncode(body);
+      final bodyJson = jsonEncode(encryptedBody);
       final encodedData = Uri.encodeComponent(bodyJson);
       
       // Construir URL con parámetros
       final url = '$baseUrl?data=$encodedData';
+
+      // Log para debugging (sin mostrar datos sensibles)
+      print('Enviando comando: ${body['comando']}');
+      if (_encryptionHelper.containsSensitiveData(body['parametros'] ?? {})) {
+        print('Datos sensibles detectados y encriptados');
+      }
 
       response = await dio.get(
         url,
@@ -129,5 +140,41 @@ class AuthDataSourceImpl implements AuthDataSource {
     }
 
     return response;
+  }
+
+  /// Encripta los datos sensibles en el body de la petición
+  Map<String, dynamic> _encryptSensitiveData(Map<String, dynamic> body) {
+    final encryptedBody = Map<String, dynamic>.from(body);
+    
+    if (encryptedBody['parametros'] != null) {
+      final parametros = Map<String, dynamic>.from(encryptedBody['parametros']);
+      
+      // Solo encriptar si contiene datos sensibles
+      if (_encryptionHelper.containsSensitiveData(parametros)) {
+        final encryptedParams = <String, dynamic>{};
+        
+        parametros.forEach((key, value) {
+          if (value != null && _isSensitiveKey(key)) {
+            // Encriptar el valor sensible
+            encryptedParams[key] = _encryptionHelper.simpleEncrypt(value.toString());
+          } else {
+            // Mantener el valor sin encriptar
+            encryptedParams[key] = value;
+          }
+        });
+        
+        encryptedBody['parametros'] = encryptedParams;
+      }
+    }
+    
+    return encryptedBody;
+  }
+
+  /// Verifica si una clave es considerada sensible
+  bool _isSensitiveKey(String key) {
+    const sensitiveKeys = ['password', 'token', 'new_password', 'email'];
+    return sensitiveKeys.any((sensitive) => 
+      key.toLowerCase().contains(sensitive.toLowerCase())
+    );
   }
 }

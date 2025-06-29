@@ -146,7 +146,7 @@ class LoginScreen extends ConsumerWidget {
                     ),
                     
                     const SizedBox(height: 20),
-                    const Text('versión 5'),
+                    const Text('versión 1'),
                     // const SizedBox(height: 40),
                     // TextButton(
                     //   onPressed: () {

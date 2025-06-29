@@ -2,19 +2,6 @@
   "version": 2,
   "env": {
     "VERCEL_TOOLBAR": "0"
-  },
-  
-  "functions": {
-    "api/proxy.js": {
-      "runtime": "vercel/node@20.x"
-    }
-  },
-  "rewrites": [
-    {
-      "src": "/api/proxy/(.*)",
-      "dest": "/api/proxy.js"
-    }
-  ]
-  
+  }
 }
 

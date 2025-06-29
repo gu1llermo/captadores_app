@@ -1,5 +1,5 @@
+// auth_data_source_impl.dart - Versión con manejo mejorado de CORS
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 
@@ -14,6 +14,11 @@ class AuthDataSourceImpl implements AuthDataSource {
     BaseOptions(
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
+      // Agregar headers por defecto
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
     ),
   );
 
@@ -127,15 +132,36 @@ class AuthDataSourceImpl implements AuthDataSource {
         uri.toString(),
         options: Options(
           headers: {
-            HttpHeaders.contentTypeHeader: "application/json"
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            // Agregar headers adicionales si es necesario
+            'Access-Control-Request-Method': 'GET',
+            'Access-Control-Request-Headers': 'Content-Type',
           },
+          // Seguir redirects automáticamente
+          followRedirects: true,
+          maxRedirects: 5,
         ),
       );
     } on DioException catch (e) {
+      print('Error en la petición: ${e.message}');
+      print('Status code: ${e.response?.statusCode}');
+      print('Headers: ${e.response?.headers}');
+      
       /// Handle redirect with code 302
       if (e.response?.statusCode == 302) {
-        final url = e.response?.headers['location']!.first;
-        response = await dio.get(url!);
+        final url = e.response?.headers['location']?.first;
+        if (url != null) {
+          response = await dio.get(
+            url,
+            options: Options(
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+            ),
+          );
+        }
       } else {
         rethrow;
       }

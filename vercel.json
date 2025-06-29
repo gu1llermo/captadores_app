@@ -1,13 +1,7 @@
 {
+  "version": 2,
   "env": {
     "VERCEL_TOOLBAR": "0"
-  },
-
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
-  
+  }
 }
+

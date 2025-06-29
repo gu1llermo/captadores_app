@@ -15,8 +15,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     ),
   );
 
-  // URL del proxy en Vercel
-  final String proxyUrl = 'https://captadores-dlc.vercel.app/api/proxy';
+  final baseUrl = EnvironmentConfig().authBaseUrl;
 
   @override
   Future<UserModel> login({
@@ -99,26 +98,40 @@ class AuthDataSourceImpl implements AuthDataSource {
   }
 
   Future<Response<dynamic>?> doPost(Map<String, dynamic> body) async {
-    final bodyJson = jsonEncode(body);
-    Response<dynamic>? response;
+  final bodyJson = jsonEncode(body);
+  Response<dynamic>? response;
 
-    try {
-      response = await dio.post(
-        proxyUrl,
-        options: Options(
-          headers: {HttpHeaders.contentTypeHeader: "application/json"},
-        ),
-        data: bodyJson,
-      );
-    } on DioException catch (e) {
-      print('Error en petición: ${e.message}');
-      if (e.response != null) {
-        print('Status code: ${e.response?.statusCode}');
-        print('Response data: ${e.response?.data}');
+  try {
+    response = await dio.post(
+      baseUrl,
+      options: Options(
+        headers: {
+          HttpHeaders.contentTypeHeader: "application/json",
+          // Headers adicionales para mejor compatibilidad CORS
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        // Configuraciones adicionales para CORS
+        validateStatus: (status) {
+          return status! < 500; // Acepta códigos de estado menores a 500
+        },
+      ),
+      data: bodyJson,
+    );
+  } on DioException catch (e) {
+    print('Error en petición: ${e.message}');
+    if (e.response != null) {
+      print('Status code: ${e.response?.statusCode}');
+      print('Response data: ${e.response?.data}');
+      
+      // Log adicional para debugging CORS
+      if (e.response?.statusCode == 403 || e.response?.statusCode == 401) {
+        print('Posible problema de CORS o permisos en Apps Script');
       }
-      rethrow;
     }
-
-    return response;
+    rethrow;
   }
+
+  return response;
+}
 }

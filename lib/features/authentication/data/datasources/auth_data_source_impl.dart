@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:dio/dio.dart';
 import '../../../../core/config/environment_config.dart';
 import '../../domain/datasources/auth_data_source.dart';
@@ -114,9 +113,9 @@ class AuthDataSourceImpl implements AuthDataSource {
       final url = '$baseUrl?data=$encodedData';
 
       // Log para debugging (sin mostrar datos sensibles)
-      print('Enviando comando: ${body['comando']}');
+      // print('Enviando comando: ${body['comando']}');
       if (_encryptionHelper.containsSensitiveData(body['parametros'] ?? {})) {
-        print('Datos sensibles detectados y encriptados');
+        // print('Datos sensibles detectados y encriptados');
       }
 
       response = await dio.get(

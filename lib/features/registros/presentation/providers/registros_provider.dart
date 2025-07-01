@@ -45,7 +45,7 @@ class RegistrosNotifier extends _$RegistrosNotifier {
 
   Future<void> refreshFromServer() async {
     final currentState = await future;
-    
+
     state = const AsyncLoading();
     try {
       final registros = await getAllRecords();
@@ -89,8 +89,21 @@ class RegistrosNotifier extends _$RegistrosNotifier {
         return allRecords;
       }
     }
-    
+
     return [];
+  }
+
+  Future<void> logout() async {
+    final currentState = await future;
+    try {
+      await ref.read(authNotifierProvider.notifier).logout();
+    } catch (error, stackTrace) {
+      setError(
+        error: error,
+        stackTrace: stackTrace,
+        currentState: currentState,
+      );
+    }
   }
 
   void saveScrollPosition() {

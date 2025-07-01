@@ -13,6 +13,7 @@ class RegistrosScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final registrosStateAsync = ref.watch(registrosNotifierProvider);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       body: RefreshIndicator(
@@ -42,18 +43,35 @@ class RegistrosScreen extends ConsumerWidget {
                       ),
                       title: Row(
                         children: [
-                          Expanded(child: Text(registro.nombreCompletoCliente, maxLines: 1, overflow: TextOverflow.ellipsis,)),
-                          Text(registro.fechaIngresoDatos.getFormat01(), style: TextStyle(fontSize: 10, color: Colors.grey.shade600),),
-
+                          Expanded(
+                            child: Text(
+                              registro.nombreCompletoCliente,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          // Text(registro.fechaIngresoDatos.getFormat01(), style: TextStyle( color: Colors.grey.shade600),),
+                          Text(
+                            registro.fechaIngresoDatos.getFormat01(),
+                            style: textTheme.bodySmall?.apply(
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
                         ],
                       ),
                       subtitle: Row(
                         children: [
-                           FaIcon(FontAwesomeIcons.whatsapp, color: Colors.green[400],),
+                          FaIcon(
+                            FontAwesomeIcons.whatsapp,
+                            color: Colors.green[400],
+                          ),
                           const SizedBox(width: 8),
                           Text(registro.fonoContactoCliente),
                         ],
                       ),
+                      onTap: () {
+                        
+                      },
                     );
                   },
                 );

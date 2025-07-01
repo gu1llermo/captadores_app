@@ -4,11 +4,47 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:captadores_app/core/extensions/datetime_utils_extension.dart';
 import 'package:captadores_app/core/extensions/strings_utils_extension.dart';
 import 'package:captadores_app/features/registros/presentation/providers/registros_provider.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../shared/presentation/widgets/widgets.dart';
 
 class RegistrosScreen extends ConsumerWidget {
   const RegistrosScreen({super.key});
 
   Future<void> onRefresh() async {}
+
+  Future<void> onPressedCerrarSesion(BuildContext context, WidgetRef ref) async {
+   
+
+    if (!context.mounted) return;
+
+    // Mostrar diálogo de confirmación
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Cerrar Sesión'),
+            content: const Text('¿Estás seguro que deseas cerrar la sesión?'),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  context.pop();
+                  
+                },
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  context.pop(); // Cerrar diálogo
+                  context.pop(); // Cerrar drawer
+                  await ref.read(registrosNotifierProvider.notifier).logout();
+                },
+                child: const Text('Confirmar'),
+              ),
+            ],
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,6 +52,9 @@ class RegistrosScreen extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
+      drawer: CustomDrawer(
+        onPressedCerrarSesion: () => onPressedCerrarSesion(context, ref),
+      ),
       body: RefreshIndicator(
         onRefresh: onRefresh, // _handleRefresh(context, ref, documentsState);
 
@@ -29,6 +68,7 @@ class RegistrosScreen extends ConsumerWidget {
               actions: [
                 IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
               ],
+              
             ),
             registrosStateAsync.when(
               data: (data) {

@@ -7,20 +7,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../authentication/presentation/providers/auth_provider.dart';
 
+
 class CustomDrawer extends ConsumerWidget {
-  // final VoidCallback? onPressedConfigButtom;
   final VoidCallback? onPressedCerrarSesion;
-  // final VoidCallback? onPressedSoporteButton;
-  // final VoidCallback? onPressedExcelOption;
-  // final VoidCallback? onPressedCuentaButton;
+
 
   const CustomDrawer({
     super.key,
-    // this.onPressedConfigButtom,
     this.onPressedCerrarSesion,
-    // this.onPressedSoporteButton,
-    // this.onPressedExcelOption,
-    // this.onPressedCuentaButton,
   });
 
   @override
@@ -29,14 +23,6 @@ class CustomDrawer extends ConsumerWidget {
     final theme = Theme.of(context);
     final authStateAsync = ref.watch(authNotifierProvider);
     // final user = authStateAsync.value?.user;
-    // final isPremium = user?.isPremium ?? false;
-    // final isAdmin = user?.isAdmin ?? false;
-    // final daysLeft = (user?.daysLeft ?? 0);
-
-    // final inventarioState = ref.watch(inventarioNotifierProvider);
-    // final tasaCount = inventarioState.tasaCount;
-    // final typeVersion = TypeVersion.version;
-    // final isOffline = typeVersion.isOffline();
 
     return Drawer(
       child: ListView(
@@ -97,17 +83,14 @@ class CustomDrawer extends ConsumerWidget {
 
           // Sección de configuración
           const Divider(),
-          // Cerrar sesión
-         
-          // muestra la versión de la app usando el paquete package_info_plus
           ListTile(
             leading: const Icon(FontAwesomeIcons.circleInfo),
             title: const _TitleWidget('Versión'),
             onTap: () async {
               final packageInfo = await PackageInfo.fromPlatform();
               final version = packageInfo.version;
-              // final buildNumber = packageInfo.buildNumber;
-
+              //final buildNumber = packageInfo.buildNumber;
+              
               final versionInfo = 'Versión: $version';
               if (!context.mounted) return;
               await showDialog(
@@ -126,11 +109,28 @@ class CustomDrawer extends ConsumerWidget {
               );
             },
           ),
-           ListTile(
+          // Cerrar sesión
+          ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const _TitleWidget('Cerrar Sesión'),
             onTap: onPressedCerrarSesion,
           ),
+          // Contacto Desarrollador
+          // ListTile(
+          //   leading: const Icon(FontAwesomeIcons.whatsapp),
+          //   title: const Text('Soporte'),
+          //   onTap: onPressedSoporteButton,
+          // ),
+          // muestra la versión de la app usando el paquete package_info_plus
+          
+          // ListTile(
+          //   leading: const Icon(FontAwesomeIcons.clipboard),
+          //   title: const Text('Términos y Condiciones'),
+          //   onTap: () {
+          //     //context.pop(); // cerrar Drawer
+          //     Clipboard.setData(const ClipboardData(text: 'Términos y Condiciones'));
+          //   },
+          // ),
         ],
       ),
     );

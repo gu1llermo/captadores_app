@@ -150,4 +150,5 @@ class AuthState {
       user: user ?? this.user,
     );
   }
+  bool get isAutenticated => status == AuthStatus.authenticated;
 }

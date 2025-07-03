@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/mixins/debounce_mixin.dart';
+import '../../../shared/inputs/inputs.dart';
 import '../inputs/inputs.dart';
 import 'auth_provider.dart';
 
@@ -101,8 +102,8 @@ class LoginState {
   final bool obscureText;
 
   const LoginState({
-    this.email = const Email(value: ''),
-    this.password = const Password(value: ''),
+    required this.email,
+    required this.password,
     bool? isLoading,
     String? errorMessage,
     this.obscureText = true,

@@ -7,6 +7,7 @@ class Rutas {
 
   // Rutas de la aplicación
   static const String registros = '/';
+  static const String newRecord = '/new-record';
   static const String recoveryPassword = 'recovery-password';
   
 }

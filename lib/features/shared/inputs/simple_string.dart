@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/inputs/input_form.dart';
+import 'input_form.dart';
 
-
-// expresión regular para validar emails
-final RegExp _emailRegex =
-    RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-
-class Email extends InputForm<String, Email> {
-  final TextEditingController? controller;
-
-  const Email({
+class SimpleString extends InputForm<String, SimpleString> {
+  final TextEditingController controller;
+  const SimpleString({
     required super.value,
     super.hasError,
-    this.controller,
+    required this.controller,
   });
 
   @override
-  Email copyWith({
+  SimpleString copyWith({
     String? value,
     bool? hasError,
     TextEditingController? controller,
   }) {
-    return Email(
+    return SimpleString(
       value: value ?? this.value,
       hasError: hasError ?? this.hasError,
       controller: controller ?? this.controller,
@@ -33,9 +27,6 @@ class Email extends InputForm<String, Email> {
   String? get errorMessage {
     if (value.trim().isEmpty) {
       return 'Campo obligatorio';
-    }
-    if (!_emailRegex.hasMatch(value.trim())) {
-      return 'Formato de email inválido';
     }
     return null;
   }

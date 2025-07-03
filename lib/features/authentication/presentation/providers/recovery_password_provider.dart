@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/mixins/debounce_mixin.dart';
-import '../inputs/email.dart';
+import '../../../shared/inputs/email.dart';
 import 'auth_provider.dart';
 
 part 'recovery_password_provider.g.dart';

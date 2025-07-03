@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/inputs/input_form.dart';
+import 'input_form.dart';
 
 
-class RepeatPassword extends InputForm<String, RepeatPassword> {
+// expresión regular para validar emails
+final RegExp _emailRegex =
+    RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+
+class Email extends InputForm<String, Email> {
   final TextEditingController controller;
-  final String password;
 
-  const RepeatPassword({
+  const Email({
     required super.value,
     super.hasError,
     required this.controller,
-    required this.password,
   });
 
   @override
-  RepeatPassword copyWith({
+  Email copyWith({
     String? value,
     bool? hasError,
     TextEditingController? controller,
-    String? password,
   }) {
-    return RepeatPassword(
+    return Email(
       value: value ?? this.value,
       hasError: hasError ?? this.hasError,
       controller: controller ?? this.controller,
-      password: password ?? this.password,
     );
   }
 
@@ -34,8 +34,8 @@ class RepeatPassword extends InputForm<String, RepeatPassword> {
     if (value.trim().isEmpty) {
       return 'Campo obligatorio';
     }
-    if (value != password) {
-      return 'Las contraseñas no coinciden';
+    if (!_emailRegex.hasMatch(value.trim())) {
+      return 'Formato de email inválido';
     }
     return null;
   }

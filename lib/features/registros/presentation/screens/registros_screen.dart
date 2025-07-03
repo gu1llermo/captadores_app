@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,60 +7,118 @@ import 'package:captadores_app/core/extensions/strings_utils_extension.dart';
 import 'package:captadores_app/features/registros/presentation/providers/registros_provider.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../shared/presentation/widgets/widgets.dart';
+import '../../../../core/navigation/rutas.dart';
+import '../../../../core/services/reload_page_service/providers/provider.dart';
+import '../widgets/boton_animado.dart';
+import '../widgets/custom_drawer.dart';
+import '../widgets/product_shimmer_list.dart';
 
-class RegistrosScreen extends ConsumerWidget {
+class RegistrosScreen extends ConsumerStatefulWidget {
   const RegistrosScreen({super.key});
 
-  Future<void> onRefresh() async {}
+  @override
+  ConsumerState<RegistrosScreen> createState() => _RegistrosScreenState();
+}
 
-  Future<void> onPressedCerrarSesion(BuildContext context, WidgetRef ref) async {
-   
+class _RegistrosScreenState extends ConsumerState<RegistrosScreen> {
+  Future<void> onRefresh() async {
+    await ref.read(registrosNotifierProvider.notifier).refreshFromServer();
+    // if (kIsWeb) {
+    //   await ref.read(reloadPageProvider).reloadPage();
+    // } else {
+    //   await ref.read(registrosNotifierProvider.notifier).refreshFromServer();
+    // }
+  }
 
+  Future<void> onPressedCerrarSesion(BuildContext context) async {
     if (!context.mounted) return;
 
     // Mostrar diálogo de confirmación
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Cerrar Sesión'),
-            content: const Text('¿Estás seguro que deseas cerrar la sesión?'),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  context.pop();
-                  
-                },
-                child: const Text('Cancelar'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  context.pop(); // Cerrar diálogo
-                  context.pop(); // Cerrar drawer
-                  await ref.read(registrosNotifierProvider.notifier).logout();
-                },
-                child: const Text('Confirmar'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Cerrar Sesión'),
+        content: const Text('¿Estás seguro que deseas cerrar la sesión?'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              context.pop();
+            },
+            child: const Text('Cancelar'),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              context.pop(); // Cerrar diálogo
+              context.pop(); // Cerrar drawer
+              await ref.read(registrosNotifierProvider.notifier).logout();
+            },
+            child: const Text('Confirmar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> onPressedAgregarRegistro(BuildContext context) async {
+    saveScrollPosition();
+
+    if (!context.mounted) return;
+
+    await context.push(Rutas.newRecord).then((value) async {
+      restoreScrollPosition();
+    });
+  }
+
+  // Before navigation
+  void saveScrollPosition() {
+    ref.read(registrosNotifierProvider.notifier).saveScrollPosition();
+  }
+
+  void restoreScrollPosition() {
+    ref.read(registrosNotifierProvider.notifier).restoreScrollPosition();
+  }
+
+  ScrollController? getScrollController() {
+    final registrosStateAsync = ref.read(registrosNotifierProvider);
+    return registrosStateAsync.when(
+      data: (state) {
+        final isAuthenticated = ref
+            .read(registrosNotifierProvider.notifier)
+            .isAuthenticated();
+
+        return isAuthenticated ? state.customScrollController : null;
+      },
+      error: (error, stackTrace) => null,
+      loading: () => null,
     );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final registrosStateAsync = ref.watch(registrosNotifierProvider);
+
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       drawer: CustomDrawer(
-        onPressedCerrarSesion: () => onPressedCerrarSesion(context, ref),
+        onPressedCerrarSesion: () => onPressedCerrarSesion(context),
       ),
       body: RefreshIndicator(
         onRefresh: onRefresh, // _handleRefresh(context, ref, documentsState);
 
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
+          controller: getScrollController(),
+
+          // controller: registrosStateAsync.when(
+          //   data: (state)  {
+          //     final isAuthenticated = ref.read(registrosNotifierProvider.notifier).isAuthenticated();
+
+          //     return isAuthenticated ? state.customScrollController: null;
+          //     },
+          //   error: (error, stackTrace) => null,
+          //   loading: () => null,
+          // ),
           slivers: [
             SliverAppBar(
               title: const Text('Captadores DLC'),
@@ -68,7 +127,6 @@ class RegistrosScreen extends ConsumerWidget {
               actions: [
                 IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
               ],
-              
             ),
             registrosStateAsync.when(
               data: (data) {
@@ -109,9 +167,7 @@ class RegistrosScreen extends ConsumerWidget {
                           Text(registro.fonoContactoCliente),
                         ],
                       ),
-                      onTap: () {
-                        
-                      },
+                      onTap: () {},
                     );
                   },
                 );
@@ -121,13 +177,28 @@ class RegistrosScreen extends ConsumerWidget {
                   child: Center(child: Text('Error: $error, $stackTrace')),
                 );
               },
+              // loading: () => const ProductShimmerList(),
               loading: () => const SliverToBoxAdapter(
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 50),
+                      CircularProgressIndicator(strokeWidth: 2),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
+      floatingActionButton: registrosStateAsync.hasValue
+          ? BotonAnimado(
+              title: 'Nuevo Registro',
+              scrollController: getScrollController(),
+              onPressed: () => onPressedAgregarRegistro(context),
+            )
+          : null,
     );
   }
 }

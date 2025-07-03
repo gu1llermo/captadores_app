@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/config/environment_config.dart';
 import 'core/navigation/router.dart';
 import 'core/theme/app_theme.dart';
+import 'my_custom_scroll_behavior.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,7 @@ class MainApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       routerConfig: router,
+      scrollBehavior: MyCustomScrollBehavior(),
     );
   }
 }

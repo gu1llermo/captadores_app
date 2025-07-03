@@ -62,6 +62,17 @@ GoRouter router(Ref ref) {
           );
         },
       ),
+      GoRoute(
+        path: Rutas.newRecord,
+        pageBuilder: (context, state) {
+          return buildPageWithTransition(
+            context: context,
+            state: state,
+            child: const NewRecordScreen(),
+            transitionType: TransitionType.slideRight,
+          );
+        },
+      ),
      
     ],
     redirect: (context, state) {

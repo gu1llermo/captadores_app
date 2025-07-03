@@ -1,42 +1,41 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/inputs/input_form.dart';
+import 'input_form.dart';
 
-
-class RepeatPassword extends InputForm<String, RepeatPassword> {
+class NumInput extends InputForm<String, NumInput> {
   final TextEditingController controller;
-  final String password;
-
-  const RepeatPassword({
+  const NumInput({
     required super.value,
     super.hasError,
     required this.controller,
-    required this.password,
   });
-
   @override
-  RepeatPassword copyWith({
+  NumInput copyWith({
     String? value,
     bool? hasError,
     TextEditingController? controller,
-    String? password,
   }) {
-    return RepeatPassword(
+    return NumInput(
       value: value ?? this.value,
       hasError: hasError ?? this.hasError,
       controller: controller ?? this.controller,
-      password: password ?? this.password,
     );
   }
 
   @override
   String? get errorMessage {
-    if (value.trim().isEmpty) {
+    final valueTrim = value.trim();
+    if (valueTrim.isEmpty) {
       return 'Campo obligatorio';
     }
-    if (value != password) {
-      return 'Las contraseñas no coinciden';
+    final numValue = num.tryParse(valueTrim);
+    if (numValue == null) {
+      return 'Debe ser un número';
     }
+    if (numValue <= 0) {
+      return 'Debe ser mayor que 0';
+    }
+
     return null;
   }
 }

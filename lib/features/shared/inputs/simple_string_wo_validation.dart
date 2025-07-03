@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../../../shared/inputs/input_form.dart';
+import 'input_form.dart';
 
-class Password extends InputForm<String, Password> {
+class SimpleStringWOValidation extends InputForm<String, SimpleStringWOValidation> {
   final TextEditingController controller;
-  const Password({
+  const SimpleStringWOValidation({
     required super.value,
     super.hasError,
     required this.controller,
   });
 
   @override
-  Password copyWith({
+  SimpleStringWOValidation copyWith({
     String? value,
     bool? hasError,
     TextEditingController? controller,
   }) {
-    return Password(
+    return SimpleStringWOValidation(
       value: value ?? this.value,
       hasError: hasError ?? this.hasError,
       controller: controller ?? this.controller,
@@ -25,13 +25,7 @@ class Password extends InputForm<String, Password> {
 
   @override
   String? get errorMessage {
-    if (value.trim().isEmpty) {
-      return 'Campo obligatorio';
-    }
-    if (value.length < 6) {
-      return 'La contraseña debe tener al menos 6 caracteres';
-    }
+    // sin validación
     return null;
   }
 }
-

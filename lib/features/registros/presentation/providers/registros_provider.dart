@@ -24,14 +24,15 @@ class RegistrosNotifier extends _$RegistrosNotifier {
     _customScrollController = ScrollController();
 
     ref.onDispose(() {
-      // _customScrollController.removeListener(_scrollListener);
       _customScrollController?.dispose();
     });
 
     List<RegistroEntity> registros = [];
 
     try {
-      registros = await getAllRecords();
+      if (isAuthenticated()) {
+        registros = await getAllRecords();
+      }
     } catch (error, stackTrace) {
       debugPrint('Error: $error, $stackTrace');
       //await setError(error: error, stackTrace: stackTrace, currentState: currentState)
@@ -72,25 +73,34 @@ class RegistrosNotifier extends _$RegistrosNotifier {
     });
   }
 
-  Future<List<RegistroEntity>> getAllRecords() async {
-    if (_authStateAsync == null) return [];
+  bool isAuthenticated() {
+    if (_authStateAsync == null) return false;
     if (_authStateAsync!.hasValue) {
       final authState = _authStateAsync!.value!;
       if (authState.isAutenticated) {
-        final user = authState.user!;
-
-        final allRecords = await ref
-            .read(registrosRepositoryProvider)
-            .getAllRecords(
-              sheetName: user.sheetName,
-              apiBaseUrl: user.apiBaseUrl,
-            );
-
-        return allRecords;
+        return true;
       }
     }
+    return false;
+  }
 
-    return [];
+  Future<List<RegistroEntity>> getAllRecords() async {
+    try {
+      final authState = _authStateAsync!.value!;
+
+      final user = authState.user!;
+
+      final allRecords = await ref
+          .read(registrosRepositoryProvider)
+          .getAllRecords(
+            sheetName: user.sheetName,
+            apiBaseUrl: user.apiBaseUrl,
+          );
+
+      return allRecords;
+    } catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> logout() async {

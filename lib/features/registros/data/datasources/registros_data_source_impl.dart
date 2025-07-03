@@ -17,8 +17,33 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
 
   @override
   Future<List<String>> getAbogadosName({required String apiBaseUrl}) async {
-    // TODO: implement getAbogadosName
-    throw UnimplementedError();
+    final response = await doRequest({
+      "comando": "get_abogados_name",
+    }, apiBaseUrl);
+
+    try {
+      if (response?.data == null) {
+        throw Exception('No se pudo obtener la respuesta');
+      }
+
+      final dataResponse = response!.data;
+      final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
+
+      if (googleSheetResponse.hasError) {
+        throw Exception(googleSheetResponse.msg);
+      }
+
+      // googleSheetResponse.data! es una lista de String
+      if (googleSheetResponse.data == null) return [];
+
+      final listResponse =
+          googleSheetResponse.data!['abogados'] as List;
+
+      final abogados = listResponse.map((abogado) => abogado as String).toList();
+      return abogados;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
@@ -45,21 +70,22 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
 
       // googleSheetResponse.data! es una lista de RegistroModel
       if (googleSheetResponse.data == null) return [];
-      
+
       final listResponse = googleSheetResponse.data!['records'] as List;
 
-      final records =
-          listResponse
-              .map((record) => RegistroModel.fromJson(record))
-              .toList();
+      final records = listResponse
+          .map((record) => RegistroModel.fromJson(record))
+          .toList();
       return records;
-      
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Response<dynamic>?> doRequest(Map<String, dynamic> body, String apiBaseUrl) async {
+  Future<Response<dynamic>?> doRequest(
+    Map<String, dynamic> body,
+    String apiBaseUrl,
+  ) async {
     Response<dynamic>? response;
 
     try {
@@ -89,5 +115,14 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
     }
 
     return response;
+  }
+
+  @override
+  Future<RegistroEntity?> getRecordById({
+    required String apiBaseUrl,
+    required String id,
+  }) {
+    // TODO: implement getRecordById
+    throw UnimplementedError();
   }
 }

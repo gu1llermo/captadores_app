@@ -16,4 +16,9 @@ class RegistrosRepositoryImpl extends RegistrosRepository {
   Future<List<RegistroEntity>> getAllRecords({required String sheetName, required String apiBaseUrl}) {
     return datasource.getAllRecords(sheetName: sheetName, apiBaseUrl: apiBaseUrl);
   }
+  
+  @override
+  Future<RegistroEntity?> getRecordById({required String apiBaseUrl, required String id}) {
+    return datasource.getRecordById(apiBaseUrl: apiBaseUrl, id: id);
+  }
 }

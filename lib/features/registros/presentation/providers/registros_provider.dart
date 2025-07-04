@@ -66,12 +66,37 @@ class RegistrosNotifier extends _$RegistrosNotifier {
     required StackTrace stackTrace,
     required RegistrosState currentState,
   }) async {
-    state = AsyncError(error, stackTrace);
+    state = AsyncData(
+      currentState.copyWith(
+        statusMessage: 'Error: $error, $stackTrace',
+        hasError: true,
+      ),
+    );
     await Future.delayed(const Duration(seconds: 3), () {
-      // una vez pasados los 3 segundos
-      state = AsyncData(currentState);
+      state = AsyncData(
+        currentState.copyWith(statusMessage: '', hasError: false),
+      );
     });
   }
+
+  Future<void> showMessage({
+    required String message,
+    int seconds = 3
+  }) async {
+    final currentState = await future;
+    state = AsyncData(
+      currentState.copyWith(
+        statusMessage: message,
+      ),
+    );
+    await Future.delayed( Duration(seconds: seconds), () {
+      state = AsyncData(
+        currentState.copyWith(statusMessage: ''),
+      );
+    });
+  }
+
+
 
   bool isAuthenticated() {
     if (_authStateAsync == null) return false;
@@ -128,6 +153,7 @@ class RegistrosNotifier extends _$RegistrosNotifier {
      
      final newRecords = [...currentState.registros, record];
      state = AsyncData(currentState.copyWith(registros: newRecords));
+     
 
     } catch (error, stackTrace) {
       setError(error: error, stackTrace: stackTrace, currentState: currentState);
@@ -171,15 +197,30 @@ class RegistrosNotifier extends _$RegistrosNotifier {
 }
 
 class RegistrosState {
+  final bool hasError;
+  final String statusMessage;
+
   final List<RegistroEntity> registros;
   final ScrollController? customScrollController;
 
-  RegistrosState({this.registros = const [], this.customScrollController});
+  RegistrosState({
+    this.statusMessage = '',
+    this.hasError = false,
+
+    this.registros = const [], 
+    this.customScrollController,
+    });
 
   RegistrosState copyWith({
+    String? statusMessage,
+    bool? hasError,
+
     List<RegistroEntity>? registros,
     ScrollController? customScrollController,
   }) => RegistrosState(
+    statusMessage: statusMessage ?? this.statusMessage,
+    hasError: hasError ?? this.hasError,
+
     registros: registros ?? this.registros,
     customScrollController:
         customScrollController ?? this.customScrollController,

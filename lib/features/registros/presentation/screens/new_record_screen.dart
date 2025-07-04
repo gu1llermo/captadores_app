@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../shared/presentation/widgets/widgets.dart';
 import '../providers/new_record_provider.dart';
@@ -96,7 +97,13 @@ class NewRecordScreen extends ConsumerWidget {
                                         .read(
                                           newRecordNotifierProvider.notifier,
                                         )
-                                        .onFormSubmit();
+                                        .onFormSubmit().then((succes) {
+                                          if (succes){
+                                            if (!context.mounted) return;
+                                            context.pop(true);
+
+                                          }
+                                        },);
                                   },
                                 ),
                               ],
@@ -123,14 +130,11 @@ class NewRecordScreen extends ConsumerWidget {
       loading: () {
         return const Scaffold(
           //appBar: AppBar(title: const Text('Loading...')),
-          body:  Column(
-            children: [
-              SizedBox(height: 50),
-              SizedBox.square(
-                dimension: 30,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ],
+          body:  Center(
+            child: SizedBox.square(
+              dimension: 30,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
           ),
         );
       },

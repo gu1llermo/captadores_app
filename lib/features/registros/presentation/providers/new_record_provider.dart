@@ -3,11 +3,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../../shared/inputs/inputs.dart';
+import '../../domain/entities/registro_entity.dart';
+import 'registros_provider.dart';
 import 'registros_repository_provider.dart';
 
 part 'new_record_provider.g.dart';
 
-@Riverpod(dependencies: [registrosRepository, AuthNotifier])
+@Riverpod(dependencies: [registrosRepository, AuthNotifier, RegistrosNotifier])
 class NewRecordNotifier extends _$NewRecordNotifier {
   AsyncValue<AuthState>? _authStateAsync;
 
@@ -18,8 +20,6 @@ class NewRecordNotifier extends _$NewRecordNotifier {
   TextEditingController? _controllerDniExt;
   TextEditingController? _controllerEmailCliente;
   TextEditingController? _controllerComboWidget;
-
-  
 
   @override
   Future<NewRecordState> build() async {
@@ -98,29 +98,152 @@ class NewRecordNotifier extends _$NewRecordNotifier {
     );
   }
 
-  Future<List<String>> getAbogados() async {
-
-    if (_authStateAsync == null) return [];
+  bool isAuthenticated() {
+    if (_authStateAsync == null) return false;
     if (_authStateAsync!.hasValue) {
       final authState = _authStateAsync!.value!;
       if (authState.isAutenticated) {
-        final user = authState.user!;
-
-        final abogados = await ref
-            .read(registrosRepositoryProvider)
-            .getAbogadosName(apiBaseUrl: user.apiBaseUrl);
-
-        return abogados;
+        return true;
       }
     }
-
-    return [];
+    return false;
   }
 
-  Future<void> prueba() async {
+  Future<List<String>> getAbogados() async {
+    if (isAuthenticated()) {
+      final authState = _authStateAsync!.value!;
+      final user = authState.user!;
+
+      final abogados = await ref
+          .read(registrosRepositoryProvider)
+          .getAbogadosName(apiBaseUrl: user.apiBaseUrl);
+
+      return abogados;
+    }
+    return [];
+  }
+  // Future<List<String>> getAbogados() async {
+
+  //   if (_authStateAsync == null) return [];
+  //   if (_authStateAsync!.hasValue) {
+  //     final authState = _authStateAsync!.value!;
+  //     if (authState.isAutenticated) {
+  //       final user = authState.user!;
+
+  //       final abogados = await ref
+  //           .read(registrosRepositoryProvider)
+  //           .getAbogadosName(apiBaseUrl: user.apiBaseUrl);
+
+  //       return abogados;
+  //     }
+  //   }
+
+  //   return [];
+  // }
+
+  // valida nombre de cliente
+  Future<void> onNombreCompletoClienteValidate() async {
     final currentState = await future;
-    final campo = currentState.nombreCompletoCliente.controller.text;
-    print('campo= $campo');
+    final nombreCompletoCliente = currentState.nombreCompletoCliente;
+    final value = nombreCompletoCliente.controller.text;
+    final nombreCompletoClienteValidated = nombreCompletoCliente
+        .onChanged(value)
+        .validate();
+    state = AsyncData(
+      currentState.copyWith(
+        nombreCompletoCliente: nombreCompletoClienteValidated,
+      ),
+    );
+  }
+
+  Future<void> onFonoContactoClienteValidate() async {
+    final currentState = await future;
+    final fonoContactoCliente = currentState.fonoContactoCliente;
+    final value = fonoContactoCliente.controller.text;
+    final fonoContactoClienteValidated = fonoContactoCliente
+        .onChanged(value)
+        .validate();
+    state = AsyncData(
+      currentState.copyWith(fonoContactoCliente: fonoContactoClienteValidated),
+    );
+  }
+
+  Future<void> validateInputs() async {
+    await onNombreCompletoClienteValidate();
+    await onFonoContactoClienteValidate();
+  }
+
+  Future<bool> onFormSubmit() async {
+    await validateInputs();
+    final currentState = await future;
+    if (!currentState.isValidForm) {
+      return false;
+    }
+    // si llega aquí es válido
+    // entonces mandamos a crear el registro
+    try {
+      if (isAuthenticated()) {
+        state = const AsyncLoading();
+        final authState = _authStateAsync!.value!;
+        final user = authState.user!;
+
+        final record = RegistroEntity(
+          nombreAsesor: user.nombreAsesor,
+          idRegistro: user.idNewRegistro,
+          abogadoQueRecepciona: currentState.abogadoQueRecepciona.value,
+          fechaIngresoDatos: DateTime.now(),
+          nombreCompletoCliente: currentState.nombreCompletoCliente.value,
+          rutCliente: currentState.rutCliente.value,
+          codigoAsesor: user.codigoAsesor,
+          dniExt: currentState.dniExt.value,
+          emailCliente: currentState.emailCliente.value,
+          fonoContactoCliente: currentState.fonoContactoCliente.value,
+        );
+
+       await ref
+            .read(registrosNotifierProvider.notifier)
+            .addNewRecord(
+              sheetName: user.sheetName,
+              apiBaseUrl: user.apiBaseUrl,
+              record: record,
+            );
+
+        state = AsyncData(currentState.copyWith());// con copywith para que sea un nuevo estado
+        // aunque no hace falta porque cuando llegue aqui se vá a salir con pop
+        // a la pantalla de registros
+
+        return true;
+      }
+    } catch (error, stackTrace) {
+      await setError(
+        error: error,
+        stackTrace: stackTrace,
+        currentState: currentState,
+      );
+      return false;
+    }
+
+    // final campo = currentState.nombreCompletoCliente.controller.text;
+    // print('campo= $campo');
+    return false;
+  }
+
+  Future<void> setError({
+    required Object error,
+    required StackTrace stackTrace,
+    required NewRecordState currentState,
+  }) async {
+    state = AsyncData(
+      currentState.copyWith(
+        statusMessage: 'Error: $error, $stackTrace',
+        hasError: true,
+      ),
+    );
+    await Future.delayed(const Duration(seconds: 3), () {
+      state = AsyncData(
+        currentState.copyWith(statusMessage: '', hasError: false),
+      );
+    });
   }
 }
 
@@ -128,8 +251,8 @@ class NewRecordState {
   final bool hasError;
   final String statusMessage;
 
-  final bool isFormPosted;
-  final bool isPosting;
+  // final bool isFormPosted;
+  // final bool isPosting;
 
   final List<String> abogados;
 
@@ -143,13 +266,17 @@ class NewRecordState {
 
   final TextEditingController controllerComboWidget;
 
+  bool get isValidForm => ![
+    nombreCompletoCliente.hasError,
+    fonoContactoCliente.hasError,
+  ].any((input) => input);
+
   NewRecordState({
     this.statusMessage = '',
     this.hasError = false,
 
-    this.isFormPosted = false,
-    this.isPosting = false,
-
+    // this.isFormPosted = false,
+    // this.isPosting = false,
     required this.abogados,
     required this.nombreCompletoCliente,
     required this.fonoContactoCliente,
@@ -165,9 +292,9 @@ class NewRecordState {
   NewRecordState copyWith({
     String? statusMessage,
     bool? hasError,
-    bool? isFormPosted,
-    bool? isPosting,
 
+    // bool? isFormPosted,
+    // bool? isPosting,
     List<String>? abogados,
 
     SimpleString? nombreCompletoCliente,
@@ -183,8 +310,8 @@ class NewRecordState {
     statusMessage: statusMessage ?? this.statusMessage,
     hasError: hasError ?? this.hasError,
 
-    isFormPosted: isFormPosted ?? this.isFormPosted,
-    isPosting: isPosting ?? this.isPosting,
+    // isFormPosted: isFormPosted ?? this.isFormPosted,
+    // isPosting: isPosting ?? this.isPosting,
     abogados: abogados ?? this.abogados,
     nombreCompletoCliente: nombreCompletoCliente ?? this.nombreCompletoCliente,
     fonoContactoCliente: fonoContactoCliente ?? this.fonoContactoCliente,

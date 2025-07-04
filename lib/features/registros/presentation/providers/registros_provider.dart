@@ -102,6 +102,44 @@ class RegistrosNotifier extends _$RegistrosNotifier {
       rethrow;
     }
   }
+  
+  Future<void> addNewRecord({
+    required String sheetName,
+    required String apiBaseUrl,
+    required RegistroEntity record,
+
+  }) async {
+    final currentState = await future;
+    if (isAuthenticated()) {
+        try {
+          
+          state = const AsyncLoading();
+      final authState = _authStateAsync!.value!;
+
+      final user = authState.user!;
+
+      final idRegistro = await ref
+          .read(registrosRepositoryProvider)
+          .addNewRecord(
+            sheetName: user.sheetName,
+            apiBaseUrl: user.apiBaseUrl,
+            record: record,
+          );
+     
+     final newRecords = [...currentState.registros, record];
+     state = AsyncData(currentState.copyWith(registros: newRecords));
+
+    } catch (error, stackTrace) {
+      setError(error: error, stackTrace: stackTrace, currentState: currentState);
+      rethrow;
+    }
+      }
+    
+
+    
+  }
+
+  
 
   Future<void> logout() async {
     final currentState = await future;

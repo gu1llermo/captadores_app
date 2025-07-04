@@ -20,16 +20,10 @@ class UserEntity {
 
   // get iniciales del usuario
   String get initials => nombreAsesor.getInitials();
-  // String get initials {
-  //   final parts = nombreAsesor.split(' ');
-  //   if (parts.length == 1) {
-  //     if (parts[0].length >=2) {
-  //       return parts[0].substring(0, 2).toUpperCase();
-  //     }
-  //     return parts[0][0].toUpperCase();
-  //   }
-  //   return parts.map((part) => part[0].toUpperCase()).join('');
-  // }
+  String get idNewRegistro {
+    final timeStamp = DateTime.now().millisecondsSinceEpoch;
+    return '$codigoAsesor.$timeStamp';
+  }
 
   String get sheetName => '$codigoAsesor-$token';
 

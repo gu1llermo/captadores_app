@@ -36,10 +36,11 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
       // googleSheetResponse.data! es una lista de String
       if (googleSheetResponse.data == null) return [];
 
-      final listResponse =
-          googleSheetResponse.data!['abogados'] as List;
+      final listResponse = googleSheetResponse.data!['abogados'] as List;
 
-      final abogados = listResponse.map((abogado) => abogado as String).toList();
+      final abogados = listResponse
+          .map((abogado) => abogado as String)
+          .toList();
       return abogados;
     } catch (e) {
       rethrow;
@@ -124,5 +125,46 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
   }) {
     // TODO: implement getRecordById
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String?> addNewRecord({
+    required String sheetName,
+    required String apiBaseUrl,
+    required RegistroEntity record,
+  }) async {
+    final recordModel = RegistroModel.fromEntity(record);
+
+    final response = await doRequest({
+      "comando": "add_new_record",
+      "parametros": {
+        "sheet_name" : sheetName,
+        "new_record": recordModel.toJson()
+        },
+    }, apiBaseUrl);
+
+    try {
+      if (response?.data == null) {
+        throw Exception('No se pudo obtener la respuesta');
+      }
+
+      final dataResponse = response!.data;
+      final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
+
+      if (googleSheetResponse.hasError) {
+        throw Exception(googleSheetResponse.msg);
+      }
+
+      if (googleSheetResponse.data == null) return null;
+      // me está regresando el mismo id de registro que le estoy pasando
+      // pero si se necesita a futuro que el backend regrese el id
+      // que es más seguro, entonces ya se tiene eso adelantado
+      final idRegistro = googleSheetResponse.data!['id_registro'] as String;
+
+      return idRegistro;
+    } catch (e) {
+      rethrow;
+    }
+
   }
 }

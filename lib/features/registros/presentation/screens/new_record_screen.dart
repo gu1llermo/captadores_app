@@ -8,6 +8,7 @@ import '../widgets/widgets.dart';
 
 class NewRecordScreen extends ConsumerWidget {
   const NewRecordScreen({super.key});
+  
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

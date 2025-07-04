@@ -111,36 +111,36 @@ class _RegistrosScreenState extends ConsumerState<RegistrosScreen> {
       drawer: CustomDrawer(
         onPressedCerrarSesion: () => onPressedCerrarSesion(context),
       ),
-      body: RefreshIndicator(
-        onRefresh: onRefresh,
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) { 
-            //print('alto: ${constraints.maxHeight}');
-            final alto = constraints.maxHeight;
-            return CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            controller: getScrollController(),
-            slivers: [
-              SliverAppBar(
-                title: const Text('Captadores DLC'),
-                floating: true,
-                snap: true,
-                actions: [
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-                ],
-              ),
-              registrosStateAsync.when(
-                data: (state) {
-                  final registros = state.registros;
-                  final hasMessage = state.statusMessage.isNotEmpty;
-                  final hasError = state.hasError;
-                  return SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: alto,
-                      child: Stack(
-                        alignment: Alignment.topCenter,
-                        children: [
-                          ListView.builder(
+      body: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) { 
+          //print('alto: ${constraints.maxHeight}');
+          final alto = constraints.maxHeight;
+          return CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: getScrollController(),
+          slivers: [
+            SliverAppBar(
+              title: const Text('Captadores DLC'),
+              floating: true,
+              snap: true,
+              actions: [
+                IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+              ],
+            ),
+            registrosStateAsync.when(
+              data: (state) {
+                final registros = state.registros;
+                final hasMessage = state.statusMessage.isNotEmpty;
+                final hasError = state.hasError;
+                return SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: alto,
+                    child: Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        RefreshIndicator(
+                          onRefresh: onRefresh,
+                          child: ListView.builder(
                             itemCount: registros.length,
                             itemBuilder: (context, index) {
                               final registro = registros[index];
@@ -176,42 +176,42 @@ class _RegistrosScreenState extends ConsumerState<RegistrosScreen> {
                                     Text(registro.fonoContactoCliente),
                                   ],
                                 ),
-                                onTap: () {},
+                                onTap: () => context.push(Rutas.recordDetails, extra: registro.idRegistro),
                               );
                             },
                           ),
-                          if (hasMessage)
-                            StatusMessageWidget(
-                              message: state.statusMessage,
-                              hasError: hasError,
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                error: (error, stackTrace) {
-                  return SliverToBoxAdapter(
-                    child: Center(child: Text('Error: $error, $stackTrace')),
-                  );
-                },
-                // loading: () => const ProductShimmerList(),
-                loading: () => const SliverToBoxAdapter(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        SizedBox(height: 50),
-                        CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        if (hasMessage)
+                          StatusMessageWidget(
+                            message: state.statusMessage,
+                            hasError: hasError,
+                          ),
                       ],
                     ),
                   ),
+                );
+              },
+              error: (error, stackTrace) {
+                return SliverToBoxAdapter(
+                  child: Center(child: Text('Error: $error, $stackTrace')),
+                );
+              },
+              // loading: () => const ProductShimmerList(),
+              loading: () => const SliverToBoxAdapter(
+                child: Center(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 50),
+                      CircularProgressIndicator(strokeWidth: 2),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          );
-           },
-          
-        ),
+            ),
+          ],
+        );
+         },
+        
       ),
       floatingActionButton: registrosStateAsync.hasValue
           ? BotonAnimado(

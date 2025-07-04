@@ -73,6 +73,18 @@ GoRouter router(Ref ref) {
           );
         },
       ),
+      GoRoute(
+        path: Rutas.recordDetails,
+        pageBuilder: (context, state) {
+          final idRegistro = state.extra as String;
+          return buildPageWithTransition(
+            context: context,
+            state: state,
+            child:  RecordDetailsScreen(idRegistro: idRegistro),
+            transitionType: TransitionType.slideRight,
+          );
+        },
+      ),
      
     ],
     redirect: (context, state) {

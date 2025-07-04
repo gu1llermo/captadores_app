@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../shared/presentation/widgets/widgets.dart';
 import '../providers/new_record_provider.dart';
+import '../widgets/widgets.dart';
 
 class NewRecordScreen extends ConsumerWidget {
   const NewRecordScreen({super.key});
@@ -10,24 +12,26 @@ class NewRecordScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final newRecordAsynState = ref.watch(newRecordNotifierProvider);
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Stack(
-        children: [
-          Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                const SliverAppBar(title: Text('Nuevo Registro')),
-                newRecordAsynState.when(
-                  data: (state) {
-          
-                    return SliverToBoxAdapter(
+
+    return newRecordAsynState.when(
+      data: (state) {
+        final hasMessage = state.statusMessage.isNotEmpty;
+        final hasError = state.hasError;
+
+        return GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Stack(
+            children: [
+              Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    const SliverAppBar(title: Text('Nuevo Registro')),
+                    SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-          
                             Wrap(
                               spacing: 16.0,
                               runSpacing: 8.0,
@@ -36,9 +40,11 @@ class NewRecordScreen extends ConsumerWidget {
                                   labelText: 'Nombre Cliente',
                                   value: state.nombreCompletoCliente.value,
                                   textInputAction: TextInputAction.next,
-                                  controller: state.nombreCompletoCliente.controller,
+                                  controller:
+                                      state.nombreCompletoCliente.controller,
                                   errorMessage:
-                                      state.nombreCompletoCliente.hasError == true
+                                      state.nombreCompletoCliente.hasError ==
+                                          true
                                       ? state.nombreCompletoCliente.errorMessage
                                       : null,
                                 ),
@@ -47,7 +53,8 @@ class NewRecordScreen extends ConsumerWidget {
                                   value: state.fonoContactoCliente.value,
                                   isNumeric: true,
                                   textInputAction: TextInputAction.next,
-                                  controller: state.fonoContactoCliente.controller,
+                                  controller:
+                                      state.fonoContactoCliente.controller,
                                   errorMessage:
                                       state.fonoContactoCliente.hasError == true
                                       ? state.fonoContactoCliente.errorMessage
@@ -73,10 +80,10 @@ class NewRecordScreen extends ConsumerWidget {
                                 ),
                                 ComboBoxWidget(
                                   title: 'Seleccionar Abogado',
-                                  items: state.abogados, 
+                                  items: state.abogados,
                                   controller: state.controllerComboWidget,
                                   label: const Text('Abogado que Recepciona'),
-                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 16),
@@ -86,7 +93,17 @@ class NewRecordScreen extends ConsumerWidget {
                                 CustomElevatedButton(
                                   child: const Text('Crear Nuevo Registro'),
                                   onPressed: () {
-                                    ref.read(newRecordNotifierProvider.notifier).prueba();
+                                    ref
+                                        .read(
+                                          newRecordNotifierProvider.notifier,
+                                        )
+                                        .onFormSubmit().then((succes) {
+                                          if (succes){
+                                            if (!context.mounted) return;
+                                            context.pop(true);
+
+                                          }
+                                        },);
                                   },
                                 ),
                               ],
@@ -94,28 +111,33 @@ class NewRecordScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
-                    );
-                  },
-                  error: (error, stackTrace) {
-                    return const SliverToBoxAdapter(child: Text('Error'));
-                  },
-                  loading: () {
-                    return const SliverToBoxAdapter(child: Column(
-                      children: [
-                         SizedBox(height: 50),
-                        SizedBox.square(
-                          dimension: 30,
-                          child: CircularProgressIndicator(strokeWidth: 2)),
-                      ],
-                    ));
-                  },
+                    ),
+                  ],
                 ),
-              ],
+              ),
+              if (hasMessage)
+              StatusMessageWidget(message: state.statusMessage, hasError: hasError),
+            ],
+          ),
+        );
+      },
+      error: (Object error, StackTrace stackTrace) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Error')),
+          body: Center(child: Text('Error: $error, $stackTrace')),
+        ); // no se usa, pero se deja allí porque es requerido
+      },
+      loading: () {
+        return const Scaffold(
+          //appBar: AppBar(title: const Text('Loading...')),
+          body:  Center(
+            child: SizedBox.square(
+              dimension: 30,
+              child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
-          
-        ],
-      ),
+        );
+      },
     );
   }
 }

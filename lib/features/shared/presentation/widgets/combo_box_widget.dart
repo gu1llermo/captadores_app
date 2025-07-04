@@ -25,7 +25,7 @@ class ComboBoxWidget extends StatefulWidget {
 class _ComboBoxWidgetState extends State<ComboBoxWidget> {
   TextEditingController controller = TextEditingController();
   bool showDropdown = false;
-  final focusNode = FocusNode();
+  // final focusNode = FocusNode();
 
   void showListAbogados(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -49,7 +49,8 @@ class _ComboBoxWidgetState extends State<ComboBoxWidget> {
                       onTap: () {
                         widget.controller.text = widget.items[index];
                         // widget.onChanged(widget.items[index]);
-                        focusNode.unfocus();
+                        // focusNode.unfocus();
+                        FocusManager.instance.primaryFocus?.unfocus();
                         setState(() {
                           showDropdown = false;
                         });
@@ -81,7 +82,7 @@ class _ComboBoxWidgetState extends State<ComboBoxWidget> {
         children: [
           TextField(
             controller: widget.controller,
-            focusNode: focusNode,
+            // focusNode: focusNode,
             onTapOutside: (event) {
               setState(() {
                 showDropdown = false;

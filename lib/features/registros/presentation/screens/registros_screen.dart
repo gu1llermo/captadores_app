@@ -12,6 +12,7 @@ import '../../../../core/services/reload_page_service/providers/provider.dart';
 import '../widgets/boton_animado.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/product_shimmer_list.dart';
+import '../widgets/widgets.dart';
 
 class RegistrosScreen extends ConsumerStatefulWidget {
   const RegistrosScreen({super.key});
@@ -66,6 +67,13 @@ class _RegistrosScreenState extends ConsumerState<RegistrosScreen> {
 
     await context.push(Rutas.newRecord).then((value) async {
       restoreScrollPosition();
+      if (value is bool) {
+        // entonces seguramente es un true
+        if (!value) return; // para asegurarme de todas maneras
+        ref
+            .read(registrosNotifierProvider.notifier)
+            .showMessage(message: 'Registro agregado exitosamente!');
+      }
     });
   }
 
@@ -104,92 +112,105 @@ class _RegistrosScreenState extends ConsumerState<RegistrosScreen> {
         onPressedCerrarSesion: () => onPressedCerrarSesion(context),
       ),
       body: RefreshIndicator(
-        onRefresh: onRefresh, // _handleRefresh(context, ref, documentsState);
-
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: getScrollController(),
-
-          // controller: registrosStateAsync.when(
-          //   data: (state)  {
-          //     final isAuthenticated = ref.read(registrosNotifierProvider.notifier).isAuthenticated();
-
-          //     return isAuthenticated ? state.customScrollController: null;
-          //     },
-          //   error: (error, stackTrace) => null,
-          //   loading: () => null,
-          // ),
-          slivers: [
-            SliverAppBar(
-              title: const Text('Captadores DLC'),
-              floating: true,
-              snap: true,
-              actions: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-              ],
-            ),
-            registrosStateAsync.when(
-              data: (data) {
-                final registros = data.registros;
-                return SliverList.builder(
-                  itemCount: registros.length,
-                  itemBuilder: (context, index) {
-                    final registro = registros[index];
-                    return ListTile(
-                      leading: CircleWidget(
-                        title: registro.nombreCompletoCliente,
-                      ),
-                      title: Row(
+        onRefresh: onRefresh,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) { 
+            //print('alto: ${constraints.maxHeight}');
+            final alto = constraints.maxHeight;
+            return CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: getScrollController(),
+            slivers: [
+              SliverAppBar(
+                title: const Text('Captadores DLC'),
+                floating: true,
+                snap: true,
+                actions: [
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+                ],
+              ),
+              registrosStateAsync.when(
+                data: (state) {
+                  final registros = state.registros;
+                  final hasMessage = state.statusMessage.isNotEmpty;
+                  final hasError = state.hasError;
+                  return SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: alto,
+                      child: Stack(
+                        alignment: Alignment.topCenter,
                         children: [
-                          Expanded(
-                            child: Text(
-                              registro.nombreCompletoCliente,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                          ListView.builder(
+                            itemCount: registros.length,
+                            itemBuilder: (context, index) {
+                              final registro = registros[index];
+                              return ListTile(
+                                leading: CircleWidget(
+                                  title: registro.nombreCompletoCliente,
+                                ),
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        registro.nombreCompletoCliente,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    // Text(registro.fechaIngresoDatos.getFormat01(), style: TextStyle( color: Colors.grey.shade600),),
+                                    Text(
+                                      registro.fechaIngresoDatos.getFormat01(),
+                                      style: textTheme.bodySmall?.apply(
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Row(
+                                  children: [
+                                    FaIcon(
+                                      FontAwesomeIcons.whatsapp,
+                                      color: Colors.green[400],
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(registro.fonoContactoCliente),
+                                  ],
+                                ),
+                                onTap: () {},
+                              );
+                            },
                           ),
-                          // Text(registro.fechaIngresoDatos.getFormat01(), style: TextStyle( color: Colors.grey.shade600),),
-                          Text(
-                            registro.fechaIngresoDatos.getFormat01(),
-                            style: textTheme.bodySmall?.apply(
-                              color: Colors.grey.shade600,
+                          if (hasMessage)
+                            StatusMessageWidget(
+                              message: state.statusMessage,
+                              hasError: hasError,
                             ),
-                          ),
                         ],
                       ),
-                      subtitle: Row(
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.whatsapp,
-                            color: Colors.green[400],
-                          ),
-                          const SizedBox(width: 8),
-                          Text(registro.fonoContactoCliente),
-                        ],
-                      ),
-                      onTap: () {},
-                    );
-                  },
-                );
-              },
-              error: (error, stackTrace) {
-                return SliverToBoxAdapter(
-                  child: Center(child: Text('Error: $error, $stackTrace')),
-                );
-              },
-              // loading: () => const ProductShimmerList(),
-              loading: () => const SliverToBoxAdapter(
-                child: Center(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 50),
-                      CircularProgressIndicator(strokeWidth: 2),
-                    ],
+                    ),
+                  );
+                },
+                error: (error, stackTrace) {
+                  return SliverToBoxAdapter(
+                    child: Center(child: Text('Error: $error, $stackTrace')),
+                  );
+                },
+                // loading: () => const ProductShimmerList(),
+                loading: () => const SliverToBoxAdapter(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 50),
+                        CircularProgressIndicator(strokeWidth: 2),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          );
+           },
+          
         ),
       ),
       floatingActionButton: registrosStateAsync.hasValue

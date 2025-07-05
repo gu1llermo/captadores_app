@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const authBaseUrlKey = 'AUTH_BASE_URL_KEY';
 const secretKey = 'SECRET_KEY';
+const databaseUrlKey = 'DATA_BASE_URL_KEY';
 const urlServerKey = 'github.io';
 
 class EnvironmentConfig {
@@ -38,6 +39,7 @@ class EnvironmentConfig {
   // }
 
   String get authBaseUrl => _getRequiredValue(authBaseUrlKey);
+  String get databaseUrl => _getRequiredValue(databaseUrlKey);
   String get secretPassword => _getRequiredValue(secretKey);
 
   static String _getValue(String key) {

@@ -1,3 +1,5 @@
+import 'package:captadores_app/core/extensions/datetime_utils_extension.dart';
+
 import '../../domain/entities/registro_entity.dart';
 
 class RegistroModel extends RegistroEntity {
@@ -70,11 +72,12 @@ class RegistroModel extends RegistroEntity {
 
   // toJson
   Map<String, Object?> toJson() {
+    // 'fecha_ingreso_datos': fechaIngresoDatos.toIso8601String(),
     return {
       'nombre_asesor': nombreAsesor,
       'id_registro': idRegistro,
       'abogado_que_recepciona': abogadoQueRecepciona,
-      'fecha_ingreso_datos': fechaIngresoDatos.toIso8601String(),
+      'fecha_ingreso_datos': fechaIngresoDatos.getFormat01(),
       'nombre_completo_cliente': nombreCompletoCliente,
       'rut_cliente': rutCliente,
       'codigo_asesor': codigoAsesor,
@@ -82,17 +85,17 @@ class RegistroModel extends RegistroEntity {
       'email_cliente': emailCliente,
       'fono_contacto_cliente': fonoContactoCliente,
       'cierre_1era_cita': cierre1eraCita,
-      'fecha_2do_llamado': fecha2doLlamado?.toIso8601String(),
+      'fecha_2do_llamado': fecha2doLlamado?.getFormat01(),
       'segundo_llamado': segundoLlamado,
-      'fecha_segunda_cita': fechaSegundaCita?.toIso8601String(),
+      'fecha_segunda_cita': fechaSegundaCita?.getFormat01(),
       'cierre_en_2da_cita': cierreEn2daCita,
-      'fecha_3er_llamado': fecha3erLlamado?.toIso8601String(),
+      'fecha_3er_llamado': fecha3erLlamado?.getFormat01(),
       'tercer_llamado': tercerLlamado,
-      'fecha_tercera_cita': fechaTerceraCita?.toIso8601String(),
+      'fecha_tercera_cita': fechaTerceraCita?.getFormat01(),
       'cierre_en_3era_cita': cierreEn3eraCita,
       'comision_por_cierre': comisionPorCierre,
       'procedimiento': procedimiento,
-      'fecha_de_cierre': fechaDeCierre?.toIso8601String(),
+      'fecha_de_cierre': fechaDeCierre?.getFormat01(),
       'periodo_cierre': periodoCierre,
     };
   }

@@ -15,31 +15,35 @@ class RegistrosRepositoryImpl extends RegistrosRepository {
   @override
   Future<List<RegistroEntity>> getAllRecords({
     required String sheetName,
-    required String apiBaseUrl,
+    required String databaseUrl,
   }) {
     return datasource.getAllRecords(
       sheetName: sheetName,
-      apiBaseUrl: apiBaseUrl,
+      databaseUrl: databaseUrl,
     );
   }
 
   @override
   Future<RegistroEntity?> getRecordById({
-    required String apiBaseUrl,
-    required String id,
+    required String databaseUrl,
+    required String idRegistro,
+    required String sheetName,
   }) {
-    return datasource.getRecordById(apiBaseUrl: apiBaseUrl, id: id);
+    return datasource.getRecordById(
+      databaseUrl: databaseUrl, 
+      sheetName: sheetName,
+      idRegistro: idRegistro);
   }
 
   @override
   Future<String?> addNewRecord({
     required String sheetName,
-    required String apiBaseUrl,
+    required String databaseUrl,
     required RegistroEntity record,
   }) {
     return datasource.addNewRecord(
       sheetName: sheetName,
-      apiBaseUrl: apiBaseUrl,
+      databaseUrl: databaseUrl,
       record: record,
     );
   }

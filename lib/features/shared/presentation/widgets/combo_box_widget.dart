@@ -23,7 +23,7 @@ class ComboBoxWidget extends StatefulWidget {
 }
 
 class _ComboBoxWidgetState extends State<ComboBoxWidget> {
-  TextEditingController controller = TextEditingController();
+  //TextEditingController controller = TextEditingController();
   bool showDropdown = false;
   // final focusNode = FocusNode();
 

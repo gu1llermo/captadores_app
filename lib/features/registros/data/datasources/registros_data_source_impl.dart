@@ -50,12 +50,12 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
   @override
   Future<List<RegistroEntity>> getAllRecords({
     required String sheetName,
-    required String apiBaseUrl,
+    required String databaseUrl,
   }) async {
     final response = await doRequest({
       "comando": "get_all_records",
       "parametros": {"sheet_name": sheetName},
-    }, apiBaseUrl);
+    }, databaseUrl);
 
     try {
       if (response?.data == null) {
@@ -120,17 +120,47 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
 
   @override
   Future<RegistroEntity?> getRecordById({
-    required String apiBaseUrl,
-    required String id,
-  }) {
-    // TODO: implement getRecordById
-    throw UnimplementedError();
+    required String databaseUrl,
+    required String sheetName,
+    required String idRegistro,
+  }) async {
+    final response = await doRequest({
+      "comando": "get_record_by_id",
+      "parametros": {
+        "sheet_name": sheetName,
+        "id_registro":idRegistro
+        },
+    }, databaseUrl);
+
+    try {
+      if (response?.data == null) {
+        throw Exception('No se pudo obtener la respuesta');
+      }
+
+      final dataResponse = response!.data;
+      final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
+
+      if (googleSheetResponse.hasError) {
+        throw Exception(googleSheetResponse.msg);
+      }
+
+      // googleSheetResponse.data! es una lista de RegistroModel
+      if (googleSheetResponse.data == null) return null;
+
+      final recordJson = googleSheetResponse.data!['record'];
+
+      final record = RegistroModel.fromJson(recordJson);
+          
+      return record;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
   Future<String?> addNewRecord({
     required String sheetName,
-    required String apiBaseUrl,
+    required String databaseUrl,
     required RegistroEntity record,
   }) async {
     final recordModel = RegistroModel.fromEntity(record);
@@ -141,7 +171,7 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
         "sheet_name" : sheetName,
         "new_record": recordModel.toJson()
         },
-    }, apiBaseUrl);
+    }, databaseUrl);
 
     try {
       if (response?.data == null) {

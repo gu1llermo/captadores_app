@@ -82,7 +82,7 @@ class NewRecordScreen extends ConsumerWidget {
                                 ComboBoxWidget(
                                   title: 'Seleccionar Abogado',
                                   items: state.abogados,
-                                  controller: state.controllerComboWidget,
+                                  controller: state.abogadoQueRecepciona.controller,
                                   label: const Text('Abogado que Recepciona'),
                                 ),
                               ],

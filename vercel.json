@@ -1,10 +1,8 @@
 {
   "version": 2,
   "env": {
-    "VERCEL_TOOLBAR": "0",
-    "AUTH_BASE_URL_KEY":"AUTH_BASE_URL_KEY_VALUE",
-    "SECRET_KEY":"SECRET_KEY_VALUE",
-    "DATA_BASE_URL_KEY":"DATA_BASE_URL_KEY_VALUE"
+    "VERCEL_TOOLBAR": "0"
+    
   },
   "headers": [
     {

@@ -52,6 +52,7 @@ class EnvironmentConfig {
   }
 
   String _getRequiredValue(String key) {
+    // print('key: $key');
     final value = _getValue(key);
     if (value.isEmpty) throw Exception('$key es requerido');
     return value;

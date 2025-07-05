@@ -153,7 +153,7 @@ class RecordDetailsScreen extends ConsumerWidget {
       error: (Object error, StackTrace stackTrace) {
         return Scaffold(
           appBar: AppBar(title: const Text('Error')),
-          body: Center(child: Text('Error: $error, $stackTrace')),
+          body: Center(child: Text('$error, $stackTrace')),
         );
       },
       loading: () {

@@ -6,7 +6,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 const authBaseUrlKey = 'AUTH_BASE_URL_KEY';
 const secretKey = 'SECRET_KEY';
 const databaseUrlKey = 'DATA_BASE_URL_KEY';
-const urlServerKey = 'github.io';
+const urlServerKey = 'vercel.app';
+// const urlServerKey = 'github.io';
 
 class EnvironmentConfig {
   

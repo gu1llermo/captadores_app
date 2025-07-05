@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/config/environment_config.dart';
 import '../../../../core/services/services.dart';
 import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../domain/entities/registro_entity.dart';
@@ -16,6 +17,8 @@ class RegistrosNotifier extends _$RegistrosNotifier {
   ScrollController? _customScrollController;
   double? _savedScrollPosition;
   AsyncValue<AuthState>? _authStateAsync;
+
+  final _databaseUrl = EnvironmentConfig().databaseUrl;
 
   @override
   Future<RegistrosState> build() async {
@@ -119,7 +122,7 @@ class RegistrosNotifier extends _$RegistrosNotifier {
           .read(registrosRepositoryProvider)
           .getAllRecords(
             sheetName: user.sheetName,
-            apiBaseUrl: user.apiBaseUrl,
+            databaseUrl: _databaseUrl,
           );
 
       return allRecords;
@@ -147,7 +150,7 @@ class RegistrosNotifier extends _$RegistrosNotifier {
           .read(registrosRepositoryProvider)
           .addNewRecord(
             sheetName: user.sheetName,
-            apiBaseUrl: user.apiBaseUrl,
+            databaseUrl: _databaseUrl,
             record: record,
           );
      

@@ -112,106 +112,165 @@ class _RegistrosScreenState extends ConsumerState<RegistrosScreen> {
         onPressedCerrarSesion: () => onPressedCerrarSesion(context),
       ),
       body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) { 
+        builder: (BuildContext context, BoxConstraints constraints) {
           //print('alto: ${constraints.maxHeight}');
           final alto = constraints.maxHeight;
           return CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          controller: getScrollController(),
-          slivers: [
-            SliverAppBar(
-              title: const Text('Captadores DLC'),
-              floating: true,
-              snap: true,
-              actions: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-              ],
-            ),
-            registrosStateAsync.when(
-              data: (state) {
-                final registros = state.registros;
-                final hasMessage = state.statusMessage.isNotEmpty;
-                final hasError = state.hasError;
-                return SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: alto,
-                    child: Stack(
-                      alignment: Alignment.topCenter,
+            physics: const AlwaysScrollableScrollPhysics(),
+            controller: getScrollController(),
+            slivers: [
+              SliverAppBar(
+                title: const Text('Captadores DLC'),
+                floating: true,
+                snap: true,
+                // expandedHeight: 50,
+                actions: [
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+                ],
+              ),
+              registrosStateAsync.when(
+                data: (state) {
+                  final registros = state.registros;
+                  final hasMessage = state.statusMessage.isNotEmpty;
+                  final hasError = state.hasError;
+                  final isDarkMode =
+                      Theme.of(context).brightness == Brightness.dark;
+                  final fechaCierreColorText = isDarkMode
+                      ? const Color.fromARGB(255, 95, 199, 25)
+                      : const Color.fromARGB(255, 18, 166, 16);
+                  final fechaIngresoDatosColorText = isDarkMode
+                      ? const Color.fromARGB(255, 180, 176, 176)
+                      : const Color.fromARGB(255, 125, 125, 125);
+                  return SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: alto,
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          RefreshIndicator(
+                            onRefresh: onRefresh,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.symmetric(),
+                              itemCount: registros.length,
+                              itemBuilder: (context, index) {
+                                final registro = registros[index];
+                                return ListTile(
+                                  leading: CircleWidget(
+                                    title: registro.nombreCompletoCliente,
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          registro.nombreCompletoCliente,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      // if (registro.isClosed)
+                                      // Text(
+                                      //   '05-06-2025',
+                                      //   style: textTheme.bodySmall?.apply(
+                                      //     color: fechaCierreColorText,
+                                      //   ),
+                                      // ) else
+                                      Text(
+                                        registro.fechaIngresoDatos
+                                            .getFormat01(),
+                                        style: textTheme.bodySmall?.apply(
+                                          color: fechaIngresoDatosColorText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  subtitle: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            FaIcon(
+                                              FontAwesomeIcons.whatsapp,
+                                              color: Colors.green[400],
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(registro.fonoContactoCliente),
+                                          ],
+                                        ),
+                                      ),
+                                      if (registro.isClosed)
+                                        Row(
+                                          children: [
+                                            FaIcon(
+                                              FontAwesomeIcons.handshake,
+                                              color: isDarkMode
+                                                  ? const Color.fromARGB(
+                                                      255,
+                                                      60,
+                                                      254,
+                                                      1,
+                                                    )
+                                                  : const Color.fromARGB(
+                                                      255,
+                                                      39,
+                                                      7,
+                                                      135,
+                                                    ),
+                                            ),
+                                            if (registro.fechaDeCierre !=
+                                                null) ...[
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                registro.fechaDeCierre!
+                                                    .getFormat01(),
+                                                style: textTheme.bodySmall
+                                                    ?.apply(
+                                                      color:
+                                                          fechaCierreColorText,
+                                                    ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                  onTap: () => context.push(
+                                    Rutas.recordDetails,
+                                    extra: registro.idRegistro,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          if (hasMessage)
+                            StatusMessageWidget(
+                              message: state.statusMessage,
+                              hasError: hasError,
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                error: (error, stackTrace) {
+                  return SliverToBoxAdapter(
+                    child: Center(child: Text('Error: $error, $stackTrace')),
+                  );
+                },
+                // loading: () => const ProductShimmerList(),
+                loading: () => const SliverToBoxAdapter(
+                  child: Center(
+                    child: Column(
                       children: [
-                        RefreshIndicator(
-                          onRefresh: onRefresh,
-                          child: ListView.builder(
-                            itemCount: registros.length,
-                            itemBuilder: (context, index) {
-                              final registro = registros[index];
-                              return ListTile(
-                                leading: CircleWidget(
-                                  title: registro.nombreCompletoCliente,
-                                ),
-                                title: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        registro.nombreCompletoCliente,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    // Text(registro.fechaIngresoDatos.getFormat01(), style: TextStyle( color: Colors.grey.shade600),),
-                                    Text(
-                                      registro.fechaIngresoDatos.getFormat01(),
-                                      style: textTheme.bodySmall?.apply(
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                subtitle: Row(
-                                  children: [
-                                    FaIcon(
-                                      FontAwesomeIcons.whatsapp,
-                                      color: Colors.green[400],
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(registro.fonoContactoCliente),
-                                  ],
-                                ),
-                                onTap: () => context.push(Rutas.recordDetails, extra: registro.idRegistro),
-                              );
-                            },
-                          ),
-                        ),
-                        if (hasMessage)
-                          StatusMessageWidget(
-                            message: state.statusMessage,
-                            hasError: hasError,
-                          ),
+                        SizedBox(height: 50),
+                        CircularProgressIndicator(strokeWidth: 2),
                       ],
                     ),
                   ),
-                );
-              },
-              error: (error, stackTrace) {
-                return SliverToBoxAdapter(
-                  child: Center(child: Text('Error: $error, $stackTrace')),
-                );
-              },
-              // loading: () => const ProductShimmerList(),
-              loading: () => const SliverToBoxAdapter(
-                child: Center(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 50),
-                      CircularProgressIndicator(strokeWidth: 2),
-                    ],
-                  ),
                 ),
               ),
-            ),
-          ],
-        );
-         },
-        
+            ],
+          );
+        },
       ),
       floatingActionButton: registrosStateAsync.hasValue
           ? BotonAnimado(

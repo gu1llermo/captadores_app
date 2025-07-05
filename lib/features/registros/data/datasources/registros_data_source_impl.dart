@@ -50,12 +50,12 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
   @override
   Future<List<RegistroEntity>> getAllRecords({
     required String sheetName,
-    required String apiBaseUrl,
+    required String databaseUrl,
   }) async {
     final response = await doRequest({
       "comando": "get_all_records",
       "parametros": {"sheet_name": sheetName},
-    }, apiBaseUrl);
+    }, databaseUrl);
 
     try {
       if (response?.data == null) {
@@ -120,17 +120,17 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
 
   @override
   Future<RegistroEntity?> getRecordById({
-    required String apiBaseUrl,
+    required String databaseUrl,
     required String sheetName,
-    required String id,
+    required String idRegistro,
   }) async {
     final response = await doRequest({
       "comando": "get_record_by_id",
       "parametros": {
         "sheet_name": sheetName,
-        "id_registro":id
+        "id_registro":idRegistro
         },
-    }, apiBaseUrl);
+    }, databaseUrl);
 
     try {
       if (response?.data == null) {
@@ -160,7 +160,7 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
   @override
   Future<String?> addNewRecord({
     required String sheetName,
-    required String apiBaseUrl,
+    required String databaseUrl,
     required RegistroEntity record,
   }) async {
     final recordModel = RegistroModel.fromEntity(record);
@@ -171,7 +171,7 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
         "sheet_name" : sheetName,
         "new_record": recordModel.toJson()
         },
-    }, apiBaseUrl);
+    }, databaseUrl);
 
     try {
       if (response?.data == null) {

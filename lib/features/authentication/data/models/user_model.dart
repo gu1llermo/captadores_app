@@ -8,7 +8,7 @@ class UserModel extends UserEntity {
     required super.email,
     required super.nombreAsesor,
     required super.codigoAsesor,
-    required super.apiBaseUrl,
+    // required super.apiBaseUrl,
     required super.token,
   });
 
@@ -18,7 +18,6 @@ class UserModel extends UserEntity {
       email: json['email'],
       nombreAsesor: json['nombre_asesor'],
       codigoAsesor: json['codigo_asesor'],
-      apiBaseUrl: json['api_base_url'],
       token: json['token'],
     );
   }
@@ -29,7 +28,7 @@ class UserModel extends UserEntity {
       'email': email,
       'nombre_asesor': nombreAsesor,
       'codigo_asesor': codigoAsesor,
-      'api_base_url': apiBaseUrl,
+      // 'api_base_url': apiBaseUrl,
       'token': token,
     };
   }

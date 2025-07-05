@@ -6,7 +6,7 @@ class UserEntity {
   final String email;
   final String nombreAsesor;
   final String codigoAsesor;
-  final String apiBaseUrl;
+  // final String apiBaseUrl;
   final String token;
 
   const UserEntity({
@@ -14,7 +14,7 @@ class UserEntity {
     required this.email,
     required this.nombreAsesor,
     required this.codigoAsesor,
-    required this.apiBaseUrl,
+    // required this.apiBaseUrl,
     required this.token,
   });
 

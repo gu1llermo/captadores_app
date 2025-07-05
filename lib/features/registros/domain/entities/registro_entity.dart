@@ -52,4 +52,12 @@ class RegistroEntity {
     this.fechaDeCierre,
     this.periodoCierre,
   });
+
+  bool get isClosed {
+    return cerroEn1eraCita || cerroEn2daCita || cerroEn3eraCita;
+  }
+  bool get cerroEn1eraCita => cierre1eraCita?.toLowerCase() == "si";
+  bool get cerroEn2daCita => cierreEn2daCita?.toLowerCase() == "si";
+  bool get cerroEn3eraCita => cierreEn3eraCita?.toLowerCase() == "si";
+
 }

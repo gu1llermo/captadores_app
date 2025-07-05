@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/config/environment_config.dart';
 import '../../../authentication/presentation/providers/auth_provider.dart';
 import '../../../shared/inputs/inputs.dart';
 import '../../domain/entities/registro_entity.dart';
@@ -19,7 +20,8 @@ class NewRecordNotifier extends _$NewRecordNotifier {
   TextEditingController? _controllerRutCliente;
   TextEditingController? _controllerDniExt;
   TextEditingController? _controllerEmailCliente;
-  // TextEditingController? _controllerComboWidget;
+  
+  final _databaseUrl = EnvironmentConfig().databaseUrl;
 
   @override
   Future<NewRecordState> build() async {
@@ -110,17 +112,16 @@ class NewRecordNotifier extends _$NewRecordNotifier {
   }
 
   Future<List<String>> getAbogados() async {
-    if (isAuthenticated()) {
-      final authState = _authStateAsync!.value!;
-      final user = authState.user!;
+    
+    
 
       final abogados = await ref
           .read(registrosRepositoryProvider)
-          .getAbogadosName(apiBaseUrl: user.apiBaseUrl);
+          .getAbogadosName(apiBaseUrl: _databaseUrl);
 
       return abogados;
-    }
-    return [];
+    
+    
   }
   // Future<List<String>> getAbogados() async {
 
@@ -205,7 +206,7 @@ class NewRecordNotifier extends _$NewRecordNotifier {
             .read(registrosNotifierProvider.notifier)
             .addNewRecord(
               sheetName: user.sheetName,
-              apiBaseUrl: user.apiBaseUrl,
+              apiBaseUrl: _databaseUrl,
               record: record,
             );
 

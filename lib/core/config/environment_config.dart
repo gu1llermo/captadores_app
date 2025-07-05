@@ -31,6 +31,8 @@ class EnvironmentConfig {
   // Mapa constante para valores en GitHub Pages
   static const _urlServerValues = {
     authBaseUrlKey: String.fromEnvironment(authBaseUrlKey),
+    databaseUrlKey: String.fromEnvironment(databaseUrlKey),
+    secretKey: String.fromEnvironment(secretKey),
   };
 
 // ésta solución es más elegante, sin embargo no la uso porque dotEnv tiene problemas
@@ -52,7 +54,7 @@ class EnvironmentConfig {
   }
 
   String _getRequiredValue(String key) {
-    // print('key: $key');
+    // print('debugkey: $key');
     final value = _getValue(key);
     if (value.isEmpty) throw Exception('$key es requerido');
     return value;

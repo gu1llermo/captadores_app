@@ -214,6 +214,14 @@ class RegistrosState {
     this.customScrollController,
     });
 
+    RegistroEntity? getRecordById(String idRegistro) {
+      final index = registros.indexWhere((record) => record.idRegistro == idRegistro);
+      if (index!=-1){// quiere decir que lo encontró
+      return registros[index];
+      }
+      return null;
+    }
+
   RegistrosState copyWith({
     String? statusMessage,
     bool? hasError,

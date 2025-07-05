@@ -38,6 +38,7 @@ class EnvironmentConfig {
   // }
 
   String get authBaseUrl => _getRequiredValue(authBaseUrlKey);
+  
   String get secretPassword => _getRequiredValue(secretKey);
 
   static String _getValue(String key) {

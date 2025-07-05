@@ -121,10 +121,40 @@ class RegistrosDataSourceImpl extends RegistrosDataSource {
   @override
   Future<RegistroEntity?> getRecordById({
     required String apiBaseUrl,
+    required String sheetName,
     required String id,
-  }) {
-    // TODO: implement getRecordById
-    throw UnimplementedError();
+  }) async {
+    final response = await doRequest({
+      "comando": "get_record_by_id",
+      "parametros": {
+        "sheet_name": sheetName,
+        "id_registro":id
+        },
+    }, apiBaseUrl);
+
+    try {
+      if (response?.data == null) {
+        throw Exception('No se pudo obtener la respuesta');
+      }
+
+      final dataResponse = response!.data;
+      final googleSheetResponse = GoogleSheetResponse.fromJson(dataResponse);
+
+      if (googleSheetResponse.hasError) {
+        throw Exception(googleSheetResponse.msg);
+      }
+
+      // googleSheetResponse.data! es una lista de RegistroModel
+      if (googleSheetResponse.data == null) return null;
+
+      final recordJson = googleSheetResponse.data!['record'];
+
+      final record = RegistroModel.fromJson(recordJson);
+          
+      return record;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override

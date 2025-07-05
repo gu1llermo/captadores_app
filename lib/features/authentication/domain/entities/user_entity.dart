@@ -26,5 +26,7 @@ class UserEntity {
   }
 
   String get sheetName => '$codigoAsesor-$token';
+  String get dataBaseUrl => 'api de google';
+  
 
 }

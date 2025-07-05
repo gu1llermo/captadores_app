@@ -19,7 +19,7 @@ class NewRecordNotifier extends _$NewRecordNotifier {
   TextEditingController? _controllerRutCliente;
   TextEditingController? _controllerDniExt;
   TextEditingController? _controllerEmailCliente;
-  TextEditingController? _controllerComboWidget;
+  // TextEditingController? _controllerComboWidget;
 
   @override
   Future<NewRecordState> build() async {
@@ -52,7 +52,7 @@ class NewRecordNotifier extends _$NewRecordNotifier {
     _controllerDniExt = TextEditingController();
     _controllerEmailCliente = TextEditingController();
 
-    _controllerComboWidget = TextEditingController();
+    // _controllerComboWidget = TextEditingController();
 
     ref.onDispose(() {
       // controllers.map((controller) => controller?.dispose());
@@ -65,7 +65,7 @@ class NewRecordNotifier extends _$NewRecordNotifier {
       _controllerDniExt?.dispose();
       _controllerEmailCliente?.dispose();
 
-      _controllerComboWidget?.dispose();
+      // _controllerComboWidget?.dispose();
     });
 
     return NewRecordState(
@@ -94,7 +94,7 @@ class NewRecordNotifier extends _$NewRecordNotifier {
         value: '',
         controller: _controllerEmailCliente!,
       ),
-      controllerComboWidget: _controllerComboWidget!,
+      // controllerComboWidget: _controllerComboWidget!,
     );
   }
 
@@ -189,15 +189,16 @@ class NewRecordNotifier extends _$NewRecordNotifier {
 
         final record = RegistroEntity(
           nombreAsesor: user.nombreAsesor,
+          codigoAsesor: user.codigoAsesor,
           idRegistro: user.idNewRegistro,
-          abogadoQueRecepciona: currentState.abogadoQueRecepciona.value,
           fechaIngresoDatos: DateTime.now(),
           nombreCompletoCliente: currentState.nombreCompletoCliente.value,
-          rutCliente: currentState.rutCliente.value,
-          codigoAsesor: user.codigoAsesor,
-          dniExt: currentState.dniExt.value,
-          emailCliente: currentState.emailCliente.value,
           fonoContactoCliente: currentState.fonoContactoCliente.value,
+
+          abogadoQueRecepciona: currentState.abogadoQueRecepciona.controller.text,
+          rutCliente: currentState.rutCliente.controller.text,
+          dniExt: currentState.dniExt.controller.text,
+          emailCliente: currentState.emailCliente.controller.text,
         );
 
        await ref
@@ -264,7 +265,7 @@ class NewRecordState {
   final SimpleStringWOValidation dniExt;
   final SimpleStringWOValidation emailCliente;
 
-  final TextEditingController controllerComboWidget;
+  // final TextEditingController controllerComboWidget;
 
   bool get isValidForm => ![
     nombreCompletoCliente.hasError,
@@ -286,7 +287,7 @@ class NewRecordState {
     required this.dniExt,
     required this.emailCliente,
 
-    required this.controllerComboWidget,
+    // required this.controllerComboWidget,
   });
 
   NewRecordState copyWith({
@@ -305,7 +306,7 @@ class NewRecordState {
     SimpleStringWOValidation? dniExt,
     SimpleStringWOValidation? emailCliente,
 
-    TextEditingController? controllerComboWidget,
+    // TextEditingController? controllerComboWidget,
   }) => NewRecordState(
     statusMessage: statusMessage ?? this.statusMessage,
     hasError: hasError ?? this.hasError,
@@ -320,6 +321,6 @@ class NewRecordState {
     dniExt: dniExt ?? this.dniExt,
     emailCliente: emailCliente ?? this.emailCliente,
 
-    controllerComboWidget: controllerComboWidget ?? this.controllerComboWidget,
+    // controllerComboWidget: controllerComboWidget ?? this.controllerComboWidget,
   );
 }

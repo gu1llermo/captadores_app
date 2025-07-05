@@ -98,7 +98,7 @@ class CustomDrawer extends ConsumerWidget {
                 builder:
                     (context) => AlertDialog(
                       title: const Text('Versión de la App'),
-                      content: Text(versionInfo),
+                      content: Text('v$versionInfo'),
                       actions: [
                         TextButton(
                           child: const Text('Cerrar'),

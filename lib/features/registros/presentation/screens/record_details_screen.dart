@@ -103,12 +103,12 @@ class RecordDetailsScreen extends ConsumerWidget {
 
               _TitleViewWidget(
                 title: 'Rut Cliente:',
-                data: '${registro?.rutCliente}',
+                data: registro?.rutCliente ?? '',
               ),
               _TitleViewWidget(title: 'Dni:', data: '${registro?.dniExt}'),
               _TitleViewWidget(
                 title: 'Cierre en 1era cita:',
-                data: '${registro?.cierre1eraCita}',
+                data: registro?.cierre1eraCita ?? '',
               ),
               _TitleViewWidget(
                 title: 'Fecha 2do llamado:',
@@ -116,7 +116,7 @@ class RecordDetailsScreen extends ConsumerWidget {
               ),
               _TitleViewWidget(
                 title: '2do llamado:',
-                data: '${registro?.segundoLlamado}',
+                data: registro?.segundoLlamado ?? '',
               ),
               _TitleViewWidget(
                 title: 'Fecha segunda cita:',
@@ -124,7 +124,7 @@ class RecordDetailsScreen extends ConsumerWidget {
               ),
               _TitleViewWidget(
                 title: 'Cierre en segunda cita:',
-                data: '${registro?.cierreEn2daCita}',
+                data: registro?.cierreEn2daCita ?? '',
               ),
               _TitleViewWidget(
                 title: 'Fecha 3er llamado:',
@@ -132,7 +132,7 @@ class RecordDetailsScreen extends ConsumerWidget {
               ),
               _TitleViewWidget(
                 title: 'Tercer llamado:',
-                data: '${registro?.tercerLlamado}',
+                data: registro?.tercerLlamado ?? '',
               ),
               _TitleViewWidget(
                 title: 'Fecha 3era cita:',
@@ -140,7 +140,7 @@ class RecordDetailsScreen extends ConsumerWidget {
               ),
               _TitleViewWidget(
                 title: 'Cierre en 3era cita:',
-                data: '${registro?.cierreEn3eraCita}',
+                data: registro?.cierreEn3eraCita ?? '',
               ),
               _TitleViewWidget(
                 title: 'Fecha de cierre:',
